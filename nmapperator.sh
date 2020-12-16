@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Create directories to save nmap output
-SAVE_DIR=Targets/$2/nmap
+SAVE_DIR=$2/nmap
 mkdir -p $SAVE_DIR
 
 # Scan all ports
