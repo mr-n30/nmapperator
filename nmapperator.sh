@@ -17,3 +17,6 @@ PORTS=$(grep -oR 'Ports:.*$' $SAVE_DIR/all-ports.gnmap | grep -oE '[0-9]{1,5}/' 
 
 # Do basic nmap scan on alive hosts and ports
 nmap -T4 -v -p $PORTS -sC -sV -oA $SAVE_DIR/default-scan $1
+
+# Do vuln scan on alive hosts and ports
+nmap -T4 -v -p $PORTS --script vuln -sV -oA $SAVE_DIR/vuln-scan $1
