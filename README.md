@@ -1,5 +1,5 @@
 # nmapperator
-A script used to automate nmap scans. Script saves output to `argv[2]/nmap/`.
+A script used to automate nmap scans. Script saves output to `argv[2]`.
 
 ## Usage:
 ```bash
@@ -8,7 +8,7 @@ A script used to automate nmap scans. Script saves output to `argv[2]/nmap/`.
 
 ## Example:
 ```bash
-# sudo bash ./nmapperator.sh 127.0.0.1 ~/Targets/scope/
+# sudo bash ./nmapperator.sh 127.0.0.1 ~/Targets/scope/nmap
 # ls -lah ~/Targets/scope/nmap/
 ...
 ...
