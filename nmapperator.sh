@@ -12,7 +12,7 @@ mkdir -p $SAVE_DIR
 echo -e "$GREEN##########################$END"
 echo -e "$GREEN### SCANNING ALL PORTS ###$END"
 echo -e "$GREEN##########################$END"
-nmap -T4 -v -p- -oA $SAVE_DIR/all-ports-scan $1
+sudo nmap -T4 -v -p- -oA $SAVE_DIR/all-ports-scan $1
 
 # TODO:
 # Thinking about implemnting for more than one host
@@ -26,10 +26,10 @@ PORTS=$(grep -oR 'Ports:.*$' $SAVE_DIR/all-ports-scan.gnmap | grep -oE '[0-9]{1,
 echo -e "$GREEN##################################$END"
 echo -e "$GREEN### DEFAULT SCAN ON OPEN PORTS ###$END"
 echo -e "$GREEN##################################$END"
-nmap -T4 -v -p $PORTS -sC -sV -oA $SAVE_DIR/default-scan $1
+sudo nmap -T4 -v -p $PORTS -sC -sV -oA $SAVE_DIR/default-scan $1
 
 # Do vuln scan on alive hosts and ports
 echo -e "$GREEN###############################$END"
 echo -e "$GREEN### VULN SCAN ON OPEN PORTS ###$END"
 echo -e "$GREEN###############################$END"
-nmap -T4 -v -p $PORTS --script vuln -sV -oA $SAVE_DIR/vuln-scan $1
+sudo nmap -T4 -v -p $PORTS --script vuln -sV -oA $SAVE_DIR/vuln-scan $1
