@@ -4,32 +4,47 @@
 GREEN="\e[32m";
 END="\e[0m";
 
-# Create directories to save nmap output
-SAVE_DIR=$2
-mkdir -p $SAVE_DIR
+# argv[1] is the domain for the script
+DOMAIN=$2
+OUTPUT_DIR=$1
+
+if [[ "$#" -ne 2 ]]
+then
+	echo -e "Usage: $0 <directory> <ip|domain>"
+	exit 1
+fi
+
+# Check if root
+if [[ $EUID -ne 0 ]]
+then
+	echo -e "$INVERTED$BLINK$RED$BOLD[!] You are not root...$END$END$END$END"
+	echo -e "Usage: $0 <directory> <ip|domain>"
+	exit 1
+fi
+
+# Create directories to save output to
+# if it doesn't already exist
+if [ ! -d "$OUTPUT_DIR" ]; then
+	mkdir $OUTPUT_DIR
+fi
 
 # Scan all ports
 echo -e "$GREEN##########################$END"
 echo -e "$GREEN### SCANNING ALL PORTS ###$END"
 echo -e "$GREEN##########################$END"
-sudo nmap -T4 -v -p- -oA $SAVE_DIR/all-ports-scan $1
-
-# TODO:
-# Thinking about implemnting for more than one host
-# Grep for hosts
-# grep -oR 'Host:.*()' $SAVE_DIR/all-ports.gnmap | awk '/\s/ { print $2 }' | sort -u | tee -a $SAVE_DIR/hosts.txt
+nmap -v -p0-65535 -oA $OUTPUT_DIR/all-ports-scan $DOMAIN
 
 # Grep for ports
-PORTS=$(grep -oR 'Ports:.*$' $SAVE_DIR/all-ports-scan.gnmap | grep -oE '[0-9]{1,5}/' | sed 's/\///g' | sort -u | tr '\n' ',' | sed 's/,$//g')
+PORTS=$(grep -ioE '[0-9]{1,5}/[a-z]+' $OUTPUT_DIR/all-ports-scan.gnmap | awk -F'/' '{ print $1 }' | tr '\n' ',' | sed 's/,$//g')
 
-# Do basic nmap scan on alive hosts and ports
+# Do default nmap script scan on alive hosts and ports
 echo -e "$GREEN##################################$END"
 echo -e "$GREEN### DEFAULT SCAN ON OPEN PORTS ###$END"
 echo -e "$GREEN##################################$END"
-sudo nmap -T4 -v -p $PORTS -sC -sV -oA $SAVE_DIR/default-scan $1
+nmap -v -p$PORTS -sC -sV -oA $OUTPUT_DIR/default-scan $DOMAIN
 
 # Do vuln scan on alive hosts and ports
 echo -e "$GREEN###############################$END"
 echo -e "$GREEN### VULN SCAN ON OPEN PORTS ###$END"
 echo -e "$GREEN###############################$END"
-sudo nmap -T4 -v -p $PORTS --script vuln -sV -oA $SAVE_DIR/vuln-scan $1
+nmap -v -p $PORTS --script vuln -sV -oA $OUTPUT_DIR/vuln-scan $DOMAIN
